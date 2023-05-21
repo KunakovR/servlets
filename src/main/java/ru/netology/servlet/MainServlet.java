@@ -1,26 +1,26 @@
 package ru.netology.servlet;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 import ru.netology.controller.PostController;
-import ru.netology.repository.PostRepository;
-import ru.netology.service.PostService;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-
+@Component
 public class MainServlet extends HttpServlet {
 
   private final static String POST_PATH = "/api/posts";
   private final static String POST_PATH_REGEX = "/api/posts/\\d+";
   private PostController controller;
 
+
   @Override
   public void init() {
-    final var repository = new PostRepository();
-    final var service = new PostService(repository);
-    controller = new PostController(service);
+    final var context = new AnnotationConfigApplicationContext("ru.netology");
+    controller = context.getBean(PostController.class);
   }
 
   @Override
