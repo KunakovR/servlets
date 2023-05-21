@@ -1,26 +1,33 @@
 package ru.netology.servlet;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.netology.controller.PostController;
-import ru.netology.repository.PostRepository;
-import ru.netology.service.PostService;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-
+@Component
 public class MainServlet extends HttpServlet {
 
   private final static String POST_PATH = "/api/posts";
   private final static String POST_PATH_REGEX = "/api/posts/\\d+";
-  private PostController controller;
+  private final PostController controller;
+
+  @Autowired
+  public MainServlet(PostController controller){
+    this.controller = controller;
+  }
 
   @Override
   public void init() {
-    final var repository = new PostRepository();
-    final var service = new PostService(repository);
-    controller = new PostController(service);
+    // Код инициализации контекста уже не требуется,
+    // так как контекст создается с использованием AnnotationConfigApplicationContext
+    // и аннотации @Component у класса MainServlet.
+    // Вместо инициализации сервиса и репозитория здесь,
+    // они будут внедрены в контроллер через автосвязывание (Autowired).
   }
 
   @Override
@@ -28,9 +35,9 @@ public class MainServlet extends HttpServlet {
     final var path = req.getRequestURI();
     if (path.equals(POST_PATH)) {
       controller.save(req.getReader(), resp);
-      return;
+    }else  {
+      super.doPost(req,resp);
     }
-    super.doPost(req, resp);
   }
 
   @Override
